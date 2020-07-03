@@ -1,0 +1,3 @@
+[package]
+aliases = flowmeter
+script_dir = scripts
