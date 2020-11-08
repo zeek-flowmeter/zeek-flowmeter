@@ -186,3 +186,6 @@ A flow is considered to be active if a successive packet arrives in less than `a
 | bwd_last_window_size         | The window size in bytes the last packet in the backward direction has. The windows scale parameter is currently ignored, as this is only set in a SYN packet but we currently look at any packet.   | Yes |
 
 
+## License
+
+Zeek FlowMeter is released under the [MIT License](https://opensource.org/licenses/MIT).
