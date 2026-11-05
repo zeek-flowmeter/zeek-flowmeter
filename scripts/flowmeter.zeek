@@ -397,7 +397,25 @@ event new_packet (c: connection, p: pkt_hdr) {
 
     # if it is an ip6 packet take the payload size of the ip6 packet and subtract the header size of the encapsulated protocol
     if( is_ip6 ){
-        data_size = p$ip6$len - header_size;
+        # the IPv6 payload length also covers any extension headers before the
+        # transport header, so subtract those too
+        local ext_size = 0;
+        for ( i in p$ip6$exts ){
+            local e = p$ip6$exts[i];
+            if ( e?$hopopts )
+                ext_size += (e$hopopts$len + 1) * 8;
+            else if ( e?$dstopts )
+                ext_size += (e$dstopts$len + 1) * 8;
+            else if ( e?$routing )
+                ext_size += (e$routing$len + 1) * 8;
+            else if ( e?$fragment )
+                ext_size += 8;
+            else if ( e?$ah )
+                ext_size += (e$ah$len + 2) * 4;
+            else if ( e?$mobility )
+                ext_size += (e$mobility$len + 1) * 8;
+        }
+        data_size = p$ip6$len - ext_size - header_size;
     }
     # if it is an ip4 packet take the packet size of the ip4 packet and subtract the ip4 header size and the header size of the encapsulated protocol
     else{
