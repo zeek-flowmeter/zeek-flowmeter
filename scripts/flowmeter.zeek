@@ -744,7 +744,7 @@ event connection_state_remove(c: connection) {
     local rec = FlowMeter::Features($uid = c$uid, $flow_duration = c$duration, $bwd_pkts_tot=packet_count[c$uid]["bwd"], $fwd_pkts_tot=packet_count[c$uid]["fwd"],
                                            $flow_FIN_flag_count = flag_count[c$uid]["FIN"], $flow_SYN_flag_count = flag_count[c$uid]["SYN"], $flow_RST_flag_count = flag_count[c$uid]["RST"],
                                            $fwd_PSH_flag_count = flag_count[c$uid]["fwd,PSH"], $bwd_PSH_flag_count = flag_count[c$uid]["bwd,PSH"], $flow_ACK_flag_count = flag_count[c$uid]["ACK"],
-                                           $fwd_URG_flag_count = flag_count[c$uid]["fwd,URG"], $bwd_URG_flag_count = flag_count[c$uid]["bwd,URG"], $flow_CWR_flag_count = flag_count[c$uid]["ECE"], $flow_ECE_flag_count = flag_count[c$uid]["CWR"],
+                                           $fwd_URG_flag_count = flag_count[c$uid]["fwd,URG"], $bwd_URG_flag_count = flag_count[c$uid]["bwd,URG"], $flow_CWR_flag_count = flag_count[c$uid]["CWR"], $flow_ECE_flag_count = flag_count[c$uid]["ECE"],
                                            $fwd_pkts_per_sec = fwd_pkts_per_sec, $bwd_pkts_per_sec = bwd_pkts_per_sec, $flow_pkts_per_sec = flow_pkts_per_sec, $down_up_ratio = down_up_ratio,
                                            $fwd_header_size_tot = header_count[c$uid]["fwd,tot"], $fwd_header_size_min = header_count[c$uid]["fwd,min"], $fwd_header_size_max = header_count[c$uid]["fwd,max"],
                                            $bwd_header_size_tot = header_count[c$uid]["bwd,tot"], $bwd_header_size_min = header_count[c$uid]["bwd,min"], $bwd_header_size_max = header_count[c$uid]["bwd,max"],
