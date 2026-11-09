@@ -397,7 +397,25 @@ event new_packet (c: connection, p: pkt_hdr) {
 
     # if it is an ip6 packet take the payload size of the ip6 packet and subtract the header size of the encapsulated protocol
     if( is_ip6 ){
-        data_size = p$ip6$len - header_size;
+        # the IPv6 payload length also covers any extension headers before the
+        # transport header, so subtract those too
+        local ext_size = 0;
+        for ( i in p$ip6$exts ){
+            local e = p$ip6$exts[i];
+            if ( e?$hopopts )
+                ext_size += (e$hopopts$len + 1) * 8;
+            else if ( e?$dstopts )
+                ext_size += (e$dstopts$len + 1) * 8;
+            else if ( e?$routing )
+                ext_size += (e$routing$len + 1) * 8;
+            else if ( e?$fragment )
+                ext_size += 8;
+            else if ( e?$ah )
+                ext_size += (e$ah$len + 2) * 4;
+            else if ( e?$mobility )
+                ext_size += (e$mobility$len + 1) * 8;
+        }
+        data_size = p$ip6$len - ext_size - header_size;
     }
     # if it is an ip4 packet take the packet size of the ip4 packet and subtract the ip4 header size and the header size of the encapsulated protocol
     else{
@@ -726,7 +744,7 @@ event connection_state_remove(c: connection) {
     local rec = FlowMeter::Features($uid = c$uid, $flow_duration = c$duration, $bwd_pkts_tot=packet_count[c$uid]["bwd"], $fwd_pkts_tot=packet_count[c$uid]["fwd"],
                                            $flow_FIN_flag_count = flag_count[c$uid]["FIN"], $flow_SYN_flag_count = flag_count[c$uid]["SYN"], $flow_RST_flag_count = flag_count[c$uid]["RST"],
                                            $fwd_PSH_flag_count = flag_count[c$uid]["fwd,PSH"], $bwd_PSH_flag_count = flag_count[c$uid]["bwd,PSH"], $flow_ACK_flag_count = flag_count[c$uid]["ACK"],
-                                           $fwd_URG_flag_count = flag_count[c$uid]["fwd,URG"], $bwd_URG_flag_count = flag_count[c$uid]["bwd,URG"], $flow_CWR_flag_count = flag_count[c$uid]["ECE"], $flow_ECE_flag_count = flag_count[c$uid]["CWR"],
+                                           $fwd_URG_flag_count = flag_count[c$uid]["fwd,URG"], $bwd_URG_flag_count = flag_count[c$uid]["bwd,URG"], $flow_CWR_flag_count = flag_count[c$uid]["CWR"], $flow_ECE_flag_count = flag_count[c$uid]["ECE"],
                                            $fwd_pkts_per_sec = fwd_pkts_per_sec, $bwd_pkts_per_sec = bwd_pkts_per_sec, $flow_pkts_per_sec = flow_pkts_per_sec, $down_up_ratio = down_up_ratio,
                                            $fwd_header_size_tot = header_count[c$uid]["fwd,tot"], $fwd_header_size_min = header_count[c$uid]["fwd,min"], $fwd_header_size_max = header_count[c$uid]["fwd,max"],
                                            $bwd_header_size_tot = header_count[c$uid]["bwd,tot"], $bwd_header_size_min = header_count[c$uid]["bwd,min"], $bwd_header_size_max = header_count[c$uid]["bwd,max"],
